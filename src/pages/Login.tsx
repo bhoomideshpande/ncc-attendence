@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
+import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -19,15 +20,30 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // ⭐ UPDATED LOGIN LOGIC
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    setTimeout(() => {
+    try {
+      const response = await axios.post('http://localhost:5001/api/auth/login', {
+        email,
+        password,
+      });
+
+      toast.success(response.data.message);
+
+      // Store token in localStorage
+      localStorage.setItem('token', response.data.token);
+
+      // Redirect staff to institute-specific dashboard
+      navigate(`/dashboard/${response.data.staff.id}`);
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Login failed';
+      toast.error(message);
+    } finally {
       setIsLoading(false);
-      toast.success("Login successful!");
-      navigate("/dashboard");
-    }, 1000);
+    }
   };
 
   return (

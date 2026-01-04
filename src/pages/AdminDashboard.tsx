@@ -1,115 +1,232 @@
+// src/pages/AdminDashboard.tsx
 import React from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Building2, Users, TrendingUp, AlertTriangle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Users, BarChart3 } from "lucide-react";
 
-// -------------------- INSTITUTE LIST --------------------
 const institutes = [
-  "KLE Technological University, Hubli",
-  "KLE SK Arts College",
-  "KLE Science & Commerce College",
-  "RLS Institute",
-  "KLE BCA College",
-  "BVB Campus",
-  "PC Jabin Science College",
-  "Karnataka Science College Dharwad",
-  "Karnataka Arts College Dharwad",
-  "JSS Banashankari College",
-  "JSS College Dharwad",
-  "SKE Society Arts & Commerce College",
-  "SKE Society Women’s College",
-  "SDM Engineering College",
-  "SDM Degree College",
-  "KIMS Hubballi",
-  "Anjuman-e-Islam Hubballi",
-  "Chetana PU & Degree College Hubballi",
+  // ================= COLLEGES =================
+  {
+    id: "pc_jabin",
+    name: "PC Jabin College, Hubli",
+    shortName: "PC Jabin",
+    totalCadets: 90,
+    attendanceRate: "90%",
+    logo: "https://media.collegedekho.com/media/img/institute/logo/1446618367.gif",
+  },
+  {
+    id: "jg_college",
+    name: "JG College, Hubli",
+    shortName: "JG College",
+    totalCadets: 85,
+    attendanceRate: "88%",
+    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT41OgH3NABo2anwM8DL9sJIi6AIQiuNHF2lQ&s",
+  },
+  {
+    id: "svsb_college",
+    name: "SVSB College, Saundatti",
+    shortName: "SVSB",
+    totalCadets: 70,
+    attendanceRate: "89%",
+    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSl-pCdDv6W5htEkoUOW8xu88lgAyB50ZbJ3w&s",
+  },
+  {
+    id: "csb_college",
+    name: "CSB College, Ramdurg",
+    shortName: "CSB",
+    totalCadets: 65,
+    attendanceRate: "87%",
+    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSwhMoTMwx6YsVqNikBWh88ZxkNqxqZO7740Q&s",
+  },
+  {
+    id: "kss_college",
+    name: "KSS College, Hubli",
+    shortName: "KSS",
+    totalCadets: 75,
+    attendanceRate: "91%",
+    logo: "https://image-static.collegedunia.com/public/college_data/images/logos/1470027902vl.jpg",
+  },
+  {
+    id: "krces_college",
+    name: "KRCES College, Bailhongal",
+    shortName: "KRCES",
+    totalCadets: 80,
+    attendanceRate: "90%",
+    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSmnvB91fdmXW3InEnjvKqPjGET9q_D8lwmw&s",
+  },
+  {
+    id: "ag_college",
+    name: "AG College, Munavalli",
+    shortName: "AG College",
+    totalCadets: 60,
+    attendanceRate: "86%",
+    logo: "https://ik.imagekit.io/agcollege/Gallery/AGCLOGO1_Edited.png",
+  },
+  {
+    id: "jss_gokak",
+    name: "JSS College, Gokak",
+    shortName: "JSS Gokak",
+    totalCadets: 78,
+    attendanceRate: "89%",
+    logo: "https://images.shiksha.com/mediadata/images/1591878652phpsvvpQc.jpg",
+  },
+  {
+    id: "ssca_govt",
+    name: "SSCA Government College, KK Koppa",
+    shortName: "SSCA Govt",
+    totalCadets: 55,
+    attendanceRate: "85%",
+    logo: "https://via.placeholder.com/80?text=SSCA",
+  },
+  {
+    id: "jss_dharwad",
+    name: "JSS College, Dharwad",
+    shortName: "JSS Dharwad",
+    totalCadets: 82,
+    attendanceRate: "88%",
+    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3eCzBHXdkKKsSWYTHXR15rFeomEX3kb8S_A&s",
+  },
+  {
+    id: "kle_tech",
+    name: "KLE Technological University, Hubli",
+    shortName: "KLE Tech",
+    totalCadets: 120,
+    attendanceRate: "92%",
+    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTp3bDpHc-bOwccM--mCw58OftWOGjTe950Dg&s",
+  },
+
+  // ================= SCHOOLS / PU =================
+  {
+    id: "st_paul",
+    name: "St Paul School, Belgaum",
+    shortName: "St Paul",
+    totalCadets: 45,
+    attendanceRate: "91%",
+    logo: "https://www.stpaulspuc.in/instlogo.png",
+  },
+  {
+    id: "st_jr_ramdurg",
+    name: "St Junior College, Ramdurg",
+    shortName: "St Jr",
+    totalCadets: 50,
+    attendanceRate: "89%",
+    logo: "https://content.jdmagicbox.com/comp/belgaum/z7/9999px831.x831.220527132938.k2z7/catalogue/-0zo2s603qw.jpg",
+  },
+  {
+    id: "sk_comp",
+    name: "SK Composite Jr College, Saundatti",
+    shortName: "SK Comp",
+    totalCadets: 48,
+    attendanceRate: "88%",
+    logo: "https://yt3.googleusercontent.com/-PHWYeqy_GzF12rG7rexTiLSw46Eln50ZGtr28AmKrsIuo5X1E7tCUowiz7VUD6DO8G0Hqc8=s900-c-k-c0x00ffffff-no-rj",
+  },
+  {
+    id: "cd_halyal",
+    name: "CD Halyal High School, Ramdurg",
+    shortName: "CD Halyal",
+    totalCadets: 42,
+    attendanceRate: "87%",
+    logo: "https://schools.olympiadsuccess.com/assets/images/school_images/b_h_building.jpg",
+  },
+  {
+    id: "kne_hs",
+    name: "KNE High School, Hubli",
+    shortName: "KNE HS",
+    totalCadets: 55,
+    attendanceRate: "90%",
+    logo: "https://pbs.twimg.com/profile_images/1310475339588493312/WQRGh7mj.jpg",
+  },
+  {
+    id: "mr_sakhare",
+    name: "M R Sakhare High School, Hubli",
+    shortName: "M R Sakhare",
+    totalCadets: 46,
+    attendanceRate: "88%",
+    logo: "https://www.klemrsems.org/images/KLE-Logo.png",
+  },
+  {
+    id: "gv_hallikeri",
+    name: "GV Hallikeri High School, Hosratti",
+    shortName: "GV Hallikeri",
+    totalCadets: 44,
+    attendanceRate: "86%",
+    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjBSCiPVTXScqk94A-sY8sus-0dnQHAmWcQg&s",
+  },
 ];
 
-const AdminDashboard = () => {
+const AdminDashboard: React.FC = () => {
+  const navigate = useNavigate();
+  const totalCadets = institutes.reduce((s, i) => s + i.totalCadets, 0);
+
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-background">
+      <div className="bg-gradient-hero pb-14">
+        <div className="container mx-auto px-4 pt-10 text-center text-white">
+          <h1 className="text-3xl font-bold">Admin Command Centre</h1>
+          <p className="text-sm opacity-85">
+            28 Karnataka Battalion NCC – Institutions Overview
+          </p>
 
-      {/* -------------------- HEADER -------------------- */}
-      <div className="text-center mb-10">
-        <h1 className="text-4xl font-bold text-gray-900 tracking-wide">
-          NCC Admin Dashboard
-        </h1>
-        <p className="text-gray-600 text-lg mt-2">
-          Monitor institute performance, attendance, and battalion status
-        </p>
+          <div className="grid grid-cols-3 gap-4 max-w-4xl mx-auto mt-6">
+            <div className="bg-white/10 rounded-xl p-4">
+              <p className="text-xs">Institutions</p>
+              <p className="text-2xl font-semibold">{institutes.length}</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-4">
+              <p className="text-xs">Total Cadets</p>
+              <p className="text-2xl font-semibold">{totalCadets}</p>
+            </div>
+            <div className="bg-white/10 rounded-xl p-4 flex justify-between">
+              <p className="font-semibold">28 Karnataka NCC</p>
+              <BarChart3 />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* ------------------- SUMMARY CARDS ------------------- */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-
-        <Card className="shadow-md p-4 border">
-          <CardHeader>
-            <CardTitle>Total Institutes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold text-primary">{institutes.length}</p>
-            <p className="text-gray-500 text-sm mt-1">Under Battalion Command</p>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-md p-4 border">
-          <CardHeader>
-            <CardTitle>Total Cadets</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold text-blue-600">2,450</p>
-            <p className="text-gray-500 text-sm mt-1">Across all institutes</p>
-          </CardContent>
-        </Card>
-
-        <Card className="shadow-md p-4 border">
-          <CardHeader>
-            <CardTitle>Overall Attendance</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-4xl font-bold text-green-600">84%</p>
-            <p className="text-gray-500 text-sm mt-1">Battalion-wide average</p>
-          </CardContent>
-        </Card>
-
-      </div>
-
-      {/* ------------------- INSTITUTE GRID ------------------- */}
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">Institutes</h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-        {institutes.map((name, idx) => (
+      <main className="container mx-auto px-4 -mt-10 pb-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {institutes.map((inst) => (
           <Card
-            key={idx}
-            className="cursor-pointer bg-white hover:shadow-xl shadow-sm border transition-all rounded-xl"
+            key={inst.id}
+            className="cursor-pointer hover:shadow-lg"
+            onClick={() => navigate(`/admin/institute/${inst.id}`)}
           >
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Building2 className="w-6 h-6 text-primary" />
-                {name}
-              </CardTitle>
+            <CardHeader className="flex flex-row gap-3">
+              <div className="w-12 h-12 rounded-full border bg-white overflow-hidden">
+                <img src={inst.logo} alt={inst.shortName} className="w-full h-full object-contain" />
+              </div>
+              <div>
+                <CardTitle className="text-base">{inst.shortName}</CardTitle>
+                <CardDescription className="text-xs">{inst.name}</CardDescription>
+              </div>
             </CardHeader>
 
-            <CardContent className="space-y-2 text-sm">
-              <p className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-blue-600" />
-                Students: <span className="font-semibold">120</span>
-              </p>
+            <CardContent>
+              <div className="flex justify-between text-sm">
+                <div className="flex items-center gap-1">
+                  <Users className="w-4 h-4" />
+                  {inst.totalCadets}
+                </div>
+                <div className="flex items-center gap-1 text-emerald-600">
+                  <BarChart3 className="w-4 h-4" />
+                  {inst.attendanceRate}
+                </div>
+              </div>
 
-              <p className="flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-green-600" />
-                Attendance: <span className="font-semibold">86%</span>
-              </p>
-
-              <p className="flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-red-500" />
-                Absentees Today: <span className="font-semibold">14</span>
-              </p>
+              <Button size="sm" variant="outline" className="w-full mt-4">
+                Open institute dashboard <ArrowRight className="ml-auto w-4 h-4" />
+              </Button>
             </CardContent>
           </Card>
         ))}
-
-      </div>
+      </main>
     </div>
   );
 };

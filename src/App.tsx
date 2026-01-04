@@ -1,3 +1,4 @@
+// src/App.tsx
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,8 +15,12 @@ import NewStudent from "./pages/NewStudent";
 import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 
-// ⭐ IMPORT YOUR NEW ADMIN DASHBOARD PAGE
+// ⭐ Admin pages
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminInstitute from "./pages/AdminInstitute";
+
+// ⭐ Staff page (NEW)
+import StaffInstituteDashboard from "./pages/StaffInstituteDashboard";
 
 const queryClient = new QueryClient();
 
@@ -27,7 +32,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
 
-          {/* PUBLIC PAGES */}
+          {/* ⭐ PUBLIC ROUTES */}
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -35,14 +40,16 @@ const App = () => (
           {/* ⭐ ADMIN ROUTES */}
           <Route path="/admin-login" element={<AdminLogin />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/institute/:slug" element={<AdminInstitute />} />
 
-          {/* STAFF ROUTES */}
+          {/* ⭐ STAFF ROUTES */}
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/:slug" element={<StaffInstituteDashboard />} />
           <Route path="/students" element={<Students />} />
           <Route path="/students/new" element={<NewStudent />} />
           <Route path="/reports" element={<Reports />} />
 
-          {/* NOT FOUND */}
+          {/* ⭐ 404 PAGE */}
           <Route path="*" element={<NotFound />} />
 
         </Routes>

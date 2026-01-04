@@ -48,6 +48,34 @@ const Reports = () => {
 
   const TOTAL_PARADES = 18;
 
+  /* ---------------------- CSV DOWNLOAD FUNCTION ---------------------- */
+  const downloadCSV = (records: any[]) => {
+    if (!records || records.length === 0) return;
+
+    const header = ["ID", "Name", "Institute", "Batch", "Absent", "Attendance"];
+
+    const rows = records.map((s) => {
+      const absent = TOTAL_PARADES - s.attendance;
+      return [
+        s.id,
+        s.name,
+        s.institute,
+        s.batch,
+        `${absent} / 18`,
+        `${s.attendance} / 18`,
+      ].join(",");
+    });
+
+    const csv = [header.join(","), ...rows].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "NCC_Student_Report.csv";
+    a.click();
+  };
+
   /* ------------------------- Filtering Logic -------------------------- */
 
   const filteredData = dummyStudents.filter((student) => {
@@ -147,6 +175,13 @@ const Reports = () => {
                 </Button>
               </div>
 
+            </div>
+
+            {/* CSV DOWNLOAD BUTTON */}
+            <div className="mt-6">
+              <Button onClick={() => downloadCSV(filteredData)}>
+                Download Report (CSV)
+              </Button>
             </div>
           </CardContent>
         </Card>

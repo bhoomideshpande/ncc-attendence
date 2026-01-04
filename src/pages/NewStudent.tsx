@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { Upload, Check } from "lucide-react";
 
-// ⭐ HEIC → JPG conversion
+/* ---------------------- HEIC → JPG Converter ---------------------- */
 const convertHEICtoJPG = (file: File): Promise<string> => {
   return new Promise((resolve) => {
     const reader = new FileReader();
@@ -59,11 +59,26 @@ const NewStudent = () => {
 
   const [photos, setPhotos] = useState<string[]>([]);
 
-  // STEP navigation
-  const handleNext = () => step < 3 && setStep(step + 1);
+  /* ---------------------- NEXT BUTTON VALIDATION ---------------------- */
+  const handleNext = () => {
+    if (step === 1) {
+      if (
+        !formData.firstName.trim() ||
+        !formData.lastName.trim() ||
+        !formData.dob.trim() ||
+        !formData.gender.trim()
+      ) {
+        toast.error("Please fill all required fields: Name, DOB, Gender.");
+        return;
+      }
+    }
+
+    setStep(step + 1);
+  };
+
   const handleBack = () => step > 1 && setStep(step - 1);
 
-  // ⭐ Upload handler (supports HEIC)
+  /* ---------------------- PHOTO UPLOAD (HEIC SUPPORTED) ---------------------- */
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
@@ -82,30 +97,26 @@ const NewStudent = () => {
     setPhotos([...photos, ...newPhotos].slice(0, 3));
   };
 
-  // Submit Handler
-  const handleSubmit = () => {
-    const timestamp = Date.now();
-    const year = new Date().getFullYear();
+  /* ---------------------- SUBMIT ---------------------- */
+  const handleSubmit = async () => {
+    try {
+      const studentData = {
+        roll: `NCC${new Date().getFullYear()}${String(Date.now()).slice(-6)}`,
+        ...formData,
+        photos,
+      };
 
-    const newStudent = {
-      id: `NCC${year}${String(timestamp).slice(-6)}`,
-      ...formData,
-      batch: year.toString(),
-      status: "Active",
-      photos,
-      createdAt: new Date().toISOString(),
-    };
+      const response = await axios.post('http://localhost:5001/api/students/register', studentData);
 
-    const existing = localStorage.getItem("ncc_students");
-    const students = existing ? JSON.parse(existing) : [];
-    students.push(newStudent);
-
-    localStorage.setItem("ncc_students", JSON.stringify(students));
-
-    toast.success("Student admitted successfully!");
-    navigate("/students");
+      toast.success("Student registered successfully!");
+      navigate("/students");
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response?.data?.message || "Failed to register student");
+    }
   };
 
+  /* ---------------------- UI ---------------------- */
   return (
     <div className="min-h-screen bg-background">
       <FlagHeader />
@@ -138,12 +149,13 @@ const NewStudent = () => {
             </CardHeader>
 
             <CardContent>
-              {/* STEP 1 */}
+              {/* ---------------------- STEP 1 ---------------------- */}
               {step === 1 && (
                 <div className="space-y-4">
+                  {/* First + Last Name */}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <Label>First Name</Label>
+                      <Label>First Name *</Label>
                       <Input
                         value={formData.firstName}
                         onChange={(e) =>
@@ -153,7 +165,7 @@ const NewStudent = () => {
                     </div>
 
                     <div>
-                      <Label>Last Name</Label>
+                      <Label>Last Name *</Label>
                       <Input
                         value={formData.lastName}
                         onChange={(e) =>
@@ -163,9 +175,10 @@ const NewStudent = () => {
                     </div>
                   </div>
 
+                  {/* DOB + Gender */}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <Label>Date of Birth</Label>
+                      <Label>Date of Birth *</Label>
                       <Input
                         type="date"
                         value={formData.dob}
@@ -176,7 +189,7 @@ const NewStudent = () => {
                     </div>
 
                     <div>
-                      <Label>Gender</Label>
+                      <Label>Gender *</Label>
                       <Select
                         value={formData.gender}
                         onValueChange={(gender) =>
@@ -195,6 +208,7 @@ const NewStudent = () => {
                     </div>
                   </div>
 
+                  {/* Address */}
                   <div>
                     <Label>Address</Label>
                     <Input
@@ -205,6 +219,7 @@ const NewStudent = () => {
                     />
                   </div>
 
+                  {/* Phone + Email */}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <Label>Phone</Label>
@@ -228,13 +243,17 @@ const NewStudent = () => {
                     </div>
                   </div>
 
+                  {/* Parent + Institute */}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
                       <Label>Parent Name</Label>
                       <Input
                         value={formData.parentName}
                         onChange={(e) =>
-                          setFormData({ ...formData, parentName: e.target.value })
+                          setFormData({
+                            ...formData,
+                            parentName: e.target.value,
+                          })
                         }
                       />
                     </div>
@@ -255,7 +274,7 @@ const NewStudent = () => {
                 </div>
               )}
 
-              {/* STEP 2 */}
+              {/* ---------------------- STEP 2 ---------------------- */}
               {step === 2 && (
                 <div className="space-y-8">
                   {/* Upload Box */}
@@ -311,19 +330,26 @@ const NewStudent = () => {
                 </div>
               )}
 
-              {/* STEP 3 */}
+              {/* ---------------------- STEP 3 ---------------------- */}
               {step === 3 && (
                 <div className="space-y-6">
                   <div className="bg-muted p-6 rounded-lg">
-                    <h3 className="font-semibold mb-4">
-                      Student Information
-                    </h3>
+                    <h3 className="font-semibold mb-4">Student Information</h3>
 
                     <div className="grid grid-cols-2 gap-4 text-sm">
-                      <p><strong>Name:</strong> {formData.firstName} {formData.lastName}</p>
-                      <p><strong>DOB:</strong> {formData.dob}</p>
-                      <p><strong>Gender:</strong> {formData.gender}</p>
-                      <p><strong>Phone:</strong> {formData.phone}</p>
+                      <p>
+                        <strong>Name:</strong> {formData.firstName}{" "}
+                        {formData.lastName}
+                      </p>
+                      <p>
+                        <strong>DOB:</strong> {formData.dob}
+                      </p>
+                      <p>
+                        <strong>Gender:</strong> {formData.gender}
+                      </p>
+                      <p>
+                        <strong>Phone:</strong> {formData.phone}
+                      </p>
                     </div>
                   </div>
 
@@ -344,7 +370,7 @@ const NewStudent = () => {
                 </div>
               )}
 
-              {/* Buttons */}
+              {/* ---------------------- BUTTONS ---------------------- */}
               <div className="flex mt-8 gap-4">
                 {step > 1 && (
                   <Button variant="outline" onClick={handleBack}>

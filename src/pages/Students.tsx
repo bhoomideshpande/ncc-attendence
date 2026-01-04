@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import axios from "axios";
 import { FlagHeader } from "@/components/FlagHeader";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,12 +9,13 @@ import { Search, UserPlus, Eye, Edit, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface Student {
-  id: string;
+  _id: string;
+  roll: string;
   firstName: string;
   lastName: string;
-  institute: string;
-  batch: string;
+  instituteCode: string;
   status: string;
+  photos: string[];
 }
 
 const Students = () => {
@@ -23,23 +24,30 @@ const Students = () => {
   const [students, setStudents] = React.useState<Student[]>([]);
 
   React.useEffect(() => {
-    // Load students from local storage
-    const storedStudents = localStorage.getItem("ncc_students");
-    if (storedStudents) {
-      setStudents(JSON.parse(storedStudents));
-    }
+    const fetchStudents = async () => {
+      try {
+        const response = await axios.get('http://localhost:5001/api/students');
+        setStudents(response.data);
+      } catch (error) {
+        console.error('Failed to fetch students:', error);
+      }
+    };
+    fetchStudents();
   }, []);
 
   const filteredStudents = students.filter(
     (student) =>
       `${student.firstName} ${student.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.id.toLowerCase().includes(searchTerm.toLowerCase())
+      student.roll.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleDelete = (studentId: string) => {
-    const updatedStudents = students.filter(s => s.id !== studentId);
-    localStorage.setItem("ncc_students", JSON.stringify(updatedStudents));
-    setStudents(updatedStudents);
+  const handleDelete = async (studentId: string) => {
+    try {
+      await axios.delete(`http://localhost:5001/api/students/${studentId}`);
+      setStudents(students.filter(s => s._id !== studentId));
+    } catch (error) {
+      console.error('Failed to delete student:', error);
+    }
   };
 
   return (
@@ -63,7 +71,7 @@ const Students = () => {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
               <Input
-                placeholder="Search by name or ID..."
+                placeholder="Search by name or roll number..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -81,39 +89,33 @@ const Students = () => {
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">ID</th>
+                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">Roll No</th>
                     <th className="text-left py-3 px-4 font-medium text-muted-foreground">Name</th>
                     <th className="text-left py-3 px-4 font-medium text-muted-foreground">Institute</th>
-                    <th className="text-left py-3 px-4 font-medium text-muted-foreground">Batch</th>
                     <th className="text-left py-3 px-4 font-medium text-muted-foreground">Status</th>
                     <th className="text-left py-3 px-4 font-medium text-muted-foreground">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredStudents.map((student) => (
-                    <tr key={student.id} className="border-b hover:bg-muted/50 transition-colors">
-                      <td className="py-3 px-4 font-mono text-sm">{student.id}</td>
+                    <tr key={student._id} className="border-b hover:bg-muted/50 transition-colors">
+                      <td className="py-3 px-4 font-mono text-sm">{student.roll}</td>
                       <td className="py-3 px-4 font-medium">{student.firstName} {student.lastName}</td>
-                      <td className="py-3 px-4 text-sm text-muted-foreground">{student.institute}</td>
-                      <td className="py-3 px-4 text-sm">{student.batch}</td>
-                      <td className="py-3 px-4">
-                        <Badge variant={student.status === "Active" ? "default" : "secondary"}>
-                          {student.status}
-                        </Badge>
-                      </td>
+                      <td className="py-3 px-4 text-sm text-muted-foreground">{student.instituteCode}</td>
+                      <td className="py-3 px-4 text-sm">{student.status}</td>
                       <td className="py-3 px-4">
                         <div className="flex gap-2">
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => navigate(`/students/${student.id}`)}
+                            onClick={() => navigate(`/students/${student._id}`)}
                           >
                             <Eye className="w-4 h-4" />
                           </Button>
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            onClick={() => handleDelete(student.id)}
+                            onClick={() => handleDelete(student._id)}
                           >
                             <Trash2 className="w-4 h-4 text-destructive" />
                           </Button>
