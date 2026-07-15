@@ -36,9 +36,6 @@ const Staff = sequelize.define('Staff', {
 }, {
   tableName: 'staff',
   timestamps: false,
-  defaultScope: {
-    attributes: { exclude: ['password_hash'] },
-  },
 });
 
 module.exports = Staff;

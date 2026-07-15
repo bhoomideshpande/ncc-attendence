@@ -30,15 +30,13 @@ router.get('/', async (req, res) => {
 router.get('/institute/:instituteCode', async (req, res) => {
   try {
     const { instituteCode } = req.params;
-    console.log('Fetching students for institute:', instituteCode);
     const students = await Student.findAll({ 
-      where: { instituteCode, status: 'active' } 
+      where: { institute_code: instituteCode, status: 'active' } 
     });
-    console.log('Found students:', students.length);
     res.json(students);
   } catch (error) {
-    console.error('Error fetching students:', error.message);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Error fetching students:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

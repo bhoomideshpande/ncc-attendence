@@ -85,16 +85,15 @@ const AdminInstitute: React.FC = () => {
     Yearly: { attendance: 89, present: 80, absent: 10, parades: 140 },
   };
 
+  const mockStudents = [
+    { roll: `${institute.code}-001`, name: "Sample Student 1", absents: 8 },
+    { roll: `${institute.code}-002`, name: "Sample Student 2", absents: 6 },
+    { roll: `${institute.code}-003`, name: "Sample Student 3", absents: 4 },
+    { roll: `${institute.code}-004`, name: "Sample Student 4", absents: 2 },
+  ];
+
   const report = mockReport[period] || mockReport.Monthly;
-  
-  // Transform fetched students to display format
-  const displayStudents = students.map((student) => ({
-    roll: student.roll || `${institute.code}-${student.id?.substring(0, 3) || 'N/A'}`,
-    name: `${student.firstName || ''} ${student.lastName || ''}`.trim() || 'Unknown',
-    absents: 0, // TODO: Fetch actual absence count from attendance records
-  }));
-  
-  const filteredStudents = displayStudents.filter((s) => s.absents >= absenceLimit);
+  const filteredStudents = mockStudents.filter((s) => s.absents >= absenceLimit);
 
   const downloadCSV = () => {
     const rows = [

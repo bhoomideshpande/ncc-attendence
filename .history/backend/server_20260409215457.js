@@ -1,10 +1,6 @@
 // Allow self-signed certificates
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-// Set DNS options to preferIPv4
-const dns = require('dns');
-dns.setDefaultResultOrder('ipv4first');
-
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');

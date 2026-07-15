@@ -46,7 +46,7 @@ const Student = sequelize.define('Student', {
   },
   instituteCode: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: false,
   },
   photos: {
     type: DataTypes.JSON,

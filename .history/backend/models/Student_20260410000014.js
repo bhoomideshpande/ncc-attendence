@@ -14,19 +14,19 @@ const Student = sequelize.define('Student', {
   },
   firstName: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: false,
   },
   lastName: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: false,
   },
   dob: {
     type: DataTypes.DATE,
-    allowNull: true,
+    allowNull: false,
   },
   gender: {
     type: DataTypes.ENUM('male', 'female', 'other'),
-    allowNull: true,
+    allowNull: false,
   },
   nationality: {
     type: DataTypes.STRING,
@@ -46,7 +46,7 @@ const Student = sequelize.define('Student', {
   },
   instituteCode: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: false,
   },
   photos: {
     type: DataTypes.JSON,
