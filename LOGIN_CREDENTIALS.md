@@ -202,7 +202,7 @@ curl -X POST http://localhost:5001/api/auth/login \
 
 4. **Login**: Use any credentials from tables above
 
----
+-----
 
 ## Troubleshooting
 
