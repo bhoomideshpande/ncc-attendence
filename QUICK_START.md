@@ -93,6 +93,6 @@ npm run dev
 - See `SUPABASE_SETUP.md` for detailed instructions
 - See `POSTGRESQL_MIGRATION.md` for technical details
 
----
+-----
 
 **Status**: Ready! 🚀
